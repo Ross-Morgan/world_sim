@@ -1,10 +1,27 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Iterable
+from typing import Iterable, Iterator, Optional
 
 from data.ids import SequentialID
 from data.units import Size, Unit
+from person import Person
+
+
+class Population:
+    def __init__(self, people: Iterable[Person] = None) -> None:
+        if people is None:
+            people = []
+
+        self.people = people
+        self.iterator = people
+
+    def __iter__(self):
+        self.iterator = iter(self.people)
+        return self.iterator
+
+    def __next__(self):
+        return next(self.iterator)
 
 
 @dataclass
@@ -13,6 +30,9 @@ class Planet:
     id: int
     is_habitable: bool
     radius: Decimal
+    population: int = 0
+    people: Population = Population()
+
 
 @dataclass
 class SolarSystem:
@@ -27,7 +47,7 @@ class HabitablePlanet(Planet):
         self.is_habitable = True
 
 
-def main():
+if __name__ == "__main__":
     _distance = Unit.Distance.Units
 
     earth = HabitablePlanet(
@@ -37,7 +57,3 @@ def main():
     )
 
     print(earth)
-
-
-if __name__ == "__main__":
-    main()
